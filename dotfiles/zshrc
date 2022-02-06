@@ -2,7 +2,7 @@
 
 autoload -Uz promptinit
 promptinit
-prompt bart
+prompt adam2
 
 setopt prompt_subst
 
@@ -37,7 +37,6 @@ fpath+=${ZDOTDIR:-~}/.zsh_functions
 
 EDITOR=vi
 
-
 # Make it so `command $foo` will potential split "$foo" into multiple
 # parameters, which is how most other shells work.
 setopt shwordsplit
@@ -68,7 +67,7 @@ export AUTO_TITLE_SCREENS="NO"
 #%{$fg[white]%}(%D %*) <%?> [%~] $program %{$fg[default]%}
 #%{$fg[cyan]%}%m %#%{$fg[default]%} "
 
-export RPROMPT=
+#export RPROMPT=
 
 set-title() {
     echo -e "\e]0;$*\007"

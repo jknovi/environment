@@ -1,0 +1,188 @@
+syntax on
+set encoding=utf-8
+set shiftwidth=4
+set softtabstop=4
+set expandtab
+set smartindent
+set hidden
+set wildmenu
+set showcmd
+set nostartofline
+set number
+set hlsearch
+set ignorecase
+set smartcase
+set showmatch
+set incsearch
+set t_Co=256
+set nowrap
+set noswapfile
+set undodir=~/.vim/undodir
+set undofile
+set relativenumber
+set spell spelllang=en_us
+
+colorscheme delek
+
+autocmd FileType java set colorcolumn=100
+autocmd FileType rust set colorcolumn=100
+
+call plug#begin('~/.vim/plugged')
+
+Plug 'kamykn/spelunker.vim'
+Plug 'qpkorr/vim-renamer'
+Plug 'cespare/vim-toml'
+Plug 'tpope/vim-fugitive'
+Plug 'tpope/vim-surround'
+Plug 'rust-lang/rust.vim'
+Plug 'racer-rust/vim-racer'
+
+Plug 'vim-airline/vim-airline'
+Plug 'vim-airline/vim-airline-themes'
+
+Plug 'jiangmiao/auto-pairs'
+
+Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
+Plug 'junegunn/fzf.vim'
+
+Plug 'preservim/nerdtree'
+
+Plug 'dense-analysis/ale'
+
+call plug#end()
+
+let mapleader = ","
+
+" Prevent flickering with gut for gut enabled plugins
+set signcolumn=yes 
+
+autocmd BufNewFile,BufRead wscript set syntax=python
+
+
+" ================ Plugins =========
+
+" ====== ALE ========
+
+" As-you-type autocomplete
+set completeopt=menu,menuone,noselect,noinsert
+let g:ale_completion_enabled = 1
+
+" language servers
+let g:ale_linters = {
+\  'rust': ['analyzer'],
+\}
+
+let g:ale_fixers = {
+\   'rust': ['trim_whitespace', 'remove_trailing_lines']
+\}
+
+" Set this variable to 1 to fix files when you save them.
+let g:ale_fix_on_save = 1
+
+let g:ale_rust_cargo_use_clippy = executable('cargo-clippy')
+
+" rustfmt options
+"let g:ale_rust_rustfmt_options = 'unstable-features'
+"
+" this one from the rust.vim plugin, actually uses rustfmt
+let g:rustfmt_autosave = 1
+
+nmap <silent> gd :ALEGoToDefinition<CR>
+"nnoremap <leader>. :ALESymbolSearch
+nnoremap <leader>r :ALERename<CR>
+nnoremap <leader>f :ALEFindReferences<CR>
+nnoremap <leader>h :ALEHover<CR>
+nnoremap <leader>an :ALENextWrap<CR>
+nnoremap <leader>ap :ALEPreviousWrap<CR>
+
+" To use tab for the menu
+inoremap <silent><expr> <Tab> pumvisible() ? "\<C-n>" : "\<TAB>"
+
+
+" ====== CoC =====
+" Symbol renaming.
+"nmap <leader>rn <Plug>(coc-rename)
+" Some servers have issues with backup files, see #649.
+set nobackup
+set nowritebackup
+" Having longer updatetime (default is 4000 ms = 4 s) leads to noticeable
+" delays and poor user experience.
+set updatetime=300
+
+
+" ====== LanguageClient ========
+"let g:LanguageClient_serverCommands = {
+"\ 'rust': ['rust-analyzer'],
+"\ }
+
+"nmap <silent> gd :call LanguageClient#textDocument_definition()<CR>
+"nmap <silent> rn :call LanguageClient#textDocument_rename()<CR>
+
+
+" ====== SPELLING ======
+" let spelunker do the spelling
+set nospell
+
+
+
+" ====== RipGrep =====
+if executable('rg')
+    let g:rg_derive_root='true'
+endif
+
+
+" ======= fzf ========
+nnoremap <silent> <C-p> :Files<CR>
+nnoremap <silent> <C-g> :Rg<CR>
+nnoremap <silent> <leader><space> :Files<CR>
+nnoremap <silent> <leader>b :Buffers<CR>
+nnoremap <silent> <leader>b :BLines<CR>
+
+
+" ====== Status Line =======
+let g:airline_powerline_fonts = 1
+
+if !exists('g:airline_symbols')
+  let g:airline_symbols = {}
+endif
+let g:airline_symbols.space = "\ua0"
+
+
+
+" Rusty tags
+"autocmd BufRead *.rs :setlocal tags=./rusty-tags.vi;/
+
+"autocmd BufWritePost *.rs :silent! exec "!rusty-tags vi --quiet --start-dir=" . expand('%:p:h') . "&" | redraw!
+"nnoremap <leader>. :Tags<CR>
+
+
+
+" ========= Vim fugitive ==========
+set diffopt+=vertical
+
+
+" ========== NerdTree ===========
+map <C-n> :NERDTreeToggle<CR>
+" Open NerdTree in current file dir
+map <C-d> :NERDTreeFind<CR>
+" Close if only NERDTree is left
+autocmd bufenter * if (winnr("$") == 1 && exists("b:NERDTree") && b:NERDTree.isTabTree()) | q | endif
+
+
+" ======= mucomplete ========
+"set completeopt-=preview
+"set completeopt+=menuone
+""  for automatic completion
+"set completeopt+=noselect
+"let g:mucomplete#enable_auto_at_startup = 1
+"let g:mucomplete#completion_delay = 1
+
+
+
+" Edit vim configuration file
+nnoremap confe :e ~/.vimrc<CR>
+" Reload vim configuration file
+nnoremap confr :source ~/.vimrc<CR>
+
+" Make the ALEError explicitly red
+highlight ALEError cterm=NONE ctermbg=160 ctermfg=NONE

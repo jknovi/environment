@@ -1,0 +1,15 @@
+# Mapping escape/CRTL to caps lock
+sudo apt-get install xcape
+/usr/bin/setxkbmap -option "ctrl:nocaps"
+xcape -e 'Control_L=Escape'
+
+# Adjust brightness
+screen=$(xrandr | grep " connected" | cut -f1 -d " ")
+xrandr --output "${screen}" --brightness 0.7
+
+# Install powerline patched fonts
+sudo apt-get install fonts-powerline
+
+# Install vim-plug
+curl -fLo ~/.vim/autoload/plug.vim --create-dirs \
+    https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim

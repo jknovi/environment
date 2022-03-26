@@ -81,6 +81,13 @@ let g:ale_fix_on_save = 1
 
 let g:ale_rust_cargo_use_clippy = executable('cargo-clippy')
 
+let g:ale_rust_analyzer_config = {
+      \ 'diagnostics': { 'disabled': ['unresolved-import']  },
+      \ 'cargo': { 'loadOutDirsFromCheck': v:true },
+      \ 'procMacro': { 'enable': v:true  },
+      \ 'checkOnSave': { 'command': 'clippy', 'enable': v:true  }
+      \ }
+
 " rustfmt options
 "let g:ale_rust_rustfmt_options = 'unstable-features'
 "

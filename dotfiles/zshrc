@@ -105,3 +105,4 @@ alias fo='vim $(fzf)'
 /usr/bin/setxkbmap -option "ctrl:nocaps"
 # Make tap ctrl = esc
 xcape -e 'Control_L=Escape'
+/usr/bin/setxkbmap us

@@ -22,7 +22,6 @@ set undofile
 set relativenumber
 set spell spelllang=en_us
 
-colorscheme delek
 
 autocmd FileType java set colorcolumn=100
 autocmd FileType rust set colorcolumn=100
@@ -49,7 +48,18 @@ Plug 'preservim/nerdtree'
 
 Plug 'dense-analysis/ale'
 
+Plug 'gruvbox-community/gruvbox'
+
 call plug#end()
+
+let g:gruvbox_contrast_dark = 'soft'
+let g:gruvbox_transparent_bg = 1
+set bg=dark
+
+"colorscheme delek
+"colorscheme default
+colorscheme gruvbox
+autocmd VimEnter * hi Normal ctermbg=none
 
 let mapleader = ","
 

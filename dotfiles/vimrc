@@ -21,7 +21,7 @@ set undodir=~/.vim/undodir
 set undofile
 set relativenumber
 set spell spelllang=en_us
-
+set bg=dark
 
 autocmd FileType java set colorcolumn=100
 autocmd FileType rust set colorcolumn=100
@@ -52,13 +52,13 @@ Plug 'gruvbox-community/gruvbox'
 
 call plug#end()
 
-let g:gruvbox_contrast_dark = 'soft'
 let g:gruvbox_transparent_bg = 1
-set bg=dark
+"let g:gruvbox_number_column = 'bg3'
 
 "colorscheme delek
 "colorscheme default
 colorscheme gruvbox
+
 autocmd VimEnter * hi Normal ctermbg=none
 
 let mapleader = ","
@@ -80,6 +80,8 @@ let g:ale_completion_enabled = 1
 " language servers
 let g:ale_linters = {
 \  'rust': ['analyzer'],
+\  'python': ['flake8', 'mypy', 'pylsp'],
+\  'asm': [],
 \}
 
 let g:ale_fixers = {
@@ -97,6 +99,11 @@ let g:ale_rust_analyzer_config = {
       \ 'procMacro': { 'enable': v:true  },
       \ 'checkOnSave': { 'command': 'clippy', 'enable': v:true  }
       \ }
+
+let g:ale_python_auto_pipenv = 1
+let g:ale_python_auto_poetry = 1
+let g:ale_python_pylsp_auto_pipenv = 1
+let g:ale_python_pylsp_auto_poetry = 1
 
 " rustfmt options
 "let g:ale_rust_rustfmt_options = 'unstable-features'

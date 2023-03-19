@@ -1,15 +1,43 @@
-Config { font = "-*-Fixed-Bold-R-Normal-*-13-*-*-*-*-*-*-*"
+Config { font = "xft:DroidSansMono NFM:size=10"
        , bgColor = "black"
        , fgColor = "grey"
        , position = TopW L 100
-       , commands = [ Run Weather "EGPF" ["-t"," <tempF>F","-L","64","-H","77","--normal","green","--high","red","--low","lightblue"] 36000
-                    , Run Cpu ["-L","3","-H","50","--normal","green","--high","red"] 10
-                    , Run Memory ["-t","Mem: <usedratio>%"] 10
+       , commands = [ Run Weather "EGPF" ["-t","<tempF>F","-L","64","-H","77","--normal","green","--high","red","--low","lightblue"] 36000
+                    , Run Cpu ["-t", "\xf2db <total>%", "-L","5","-H","52","--normal","green","--high","red"] 10
+                    , Run Memory ["-t","\xf539 <usedratio>%"] 10
+                    , Run Battery        [ "--template" , "<fc=#b58900><acstatus></fc>"
+                            , "--Low"      , "10"        -- units: %
+                            , "--High"     , "80"        -- units: %
+                            , "--low"      , "darkred"
+                            , "--normal"   , "darkorange"
+                            , "--high"     , "darkgreen"
+
+                            , "--" -- battery specific options
+                                -- discharging status
+                                , "-o"	, "<fn=1>\xf242</fn> <left>%"
+                                -- AC "on" status
+                                , "-O"	, "<fn=1>\xf1e6</fn> <left>%"
+                                -- charged status
+                                , "-i"	, "<fn=1>\xf1e6</fn> <left>%"
+                                , "--off-icon-pattern", "<fn=1>\xf1e6</fn>"
+                                , "--on-icon-pattern", "<fn=1>\xf1e6</fn>"
+                            ] 10
                     , Run Swap [] 10
-                    , Run Date "%a %b %_d %l:%M" "date" 10
+                    , Run Wireless "wlp4s0" 
+                            [ "-a", "l"
+                            , "-x", "-"
+                                , "-t", "<fc=#6c71c4><fn=1>\xf1eb</fn> <essid> <quality>%</fc>"
+                                , "-L", "50"
+                                , "-H", "75"
+                                -- , "-l", "#dc322f" -- red
+                                , "-l", "#6c71c4" -- violet
+                                , "-n", "#6c71c4" -- violet
+                                , "-h", "#6c71c4" -- violet
+                            ] 10
+                    , Run Date "<fc=#268bd2><fn=1>\xf073</fn> %a %d %b %Y</fc> <fc=#3AA198><fn=1></fn> %H:%M:%S</fc>" "date" 10
                     , Run StdinReader
                     ]
        , sepChar = "%"
        , alignSep = "}{"
-       , template = "%StdinReader% }{ %cpu% | %memory% * %swap%    <fc=#ee9a00>%date%</fc> | %EGPF%"
+       , template = "%StdinReader% }{ %cpu% %memory% | %wlp4s0wi% | %battery% | <fc=#ee9a00>%date%</fc> | %EGPF%"
        }

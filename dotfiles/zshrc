@@ -117,8 +117,9 @@ export NVM_DIR="$HOME/.nvm"
 
 . $HOME/.asdf/asdf.sh
 
-export OCELOT_PY_VERSION=3.10.8
-export PYTHON_CONFIGURE_OPTS="--enable-shared" 
+export KOTLIN_PATH=/var/lib/snapd/snap/kotlin/current
+export JAVA_HOME=/usr/lib/jvm/java-20-openjdk-20.0.1.0.9-8.rolling.fc38.x86_64
+export SPARK_HOME=/home/jcanovi/.spark/spark-3.4.0-bin-hadoop3
 
 # The next line updates PATH for the Google Cloud SDK.
 if [ -f '/home/jcanovi/packages/google-cloud-sdk/path.zsh.inc' ]; then . '/home/jcanovi/packages/google-cloud-sdk/path.zsh.inc'; fi
@@ -127,13 +128,10 @@ if [ -f '/home/jcanovi/packages/google-cloud-sdk/path.zsh.inc' ]; then . '/home/
 if [ -f '/home/jcanovi/packages/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/jcanovi/packages/google-cloud-sdk/completion.zsh.inc'; fi
 
 
-source ~/.config/ocelot/control-plane.local.dev.env
-
-alias aws-si="aws --region us-west-2 --profile substrate-integ"
-
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/bin/terraform terraform
 
+
+
 ## this should be the last line!!
 eval "$(starship init zsh)"
-

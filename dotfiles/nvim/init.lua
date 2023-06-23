@@ -1,54 +1,62 @@
-local lazypath = vim.fn.stdpath('data') .. '/lazy/lazy.nvim'
+local cmd = vim.cmd
+local api = vim.api
+local g = vim.g
 
--- Auto-install lazy.nvim if not present
-if not vim.loop.fs_stat(lazypath) then
-  print('Installing lazy.nvim....')
-  vim.fn.system({
-    'git',
-    'clone',
-    '--filter=blob:none',
-    'https://github.com/folke/lazy.nvim.git',
-    '--branch=stable', -- latest stable release
-    lazypath,
-  })
-  print('Done.')
-end
+require("jknovi.plugins")
+require("jknovi.lsp").setup()
+require("jknovi.core.opts")
 
-vim.opt.rtp:prepend(lazypath)
+cmd.colorscheme('gruvbox')
+--cmd.colorscheme('tokyonight')
+--
+api.nvim_set_hl(0, "Normal", { bg = "none" })
+api.nvim_set_hl(0, "NormalFloat", { bg = "none" })
 
-require('lazy').setup({
-  {'folke/tokyonight.nvim'},
-  {
-    'VonHeikemen/lsp-zero.nvim',
-    branch = 'v2.x',
-    dependencies = {
-      -- LSP Support
-      {'neovim/nvim-lspconfig'},             -- Required
-      {                                      -- Optional
-        'williamboman/mason.nvim',
-        build = function()
-          pcall(vim.cmd, 'MasonUpdate')
-        end,
-      },
-      {'williamboman/mason-lspconfig.nvim'}, -- Optional
+require("jknovi.core.keymaps")
+--require("jknovi.plugins.treesitter")
 
-      -- Autocompletion
-      {'hrsh7th/nvim-cmp'},     -- Required
-      {'hrsh7th/cmp-nvim-lsp'}, -- Required
-      {'L3MON4D3/LuaSnip'},     -- Required
+
+
+require('lualine').setup {
+  options = {
+    theme = 'gruvbox',
+    icons_enabled = true,
+    component_separators = { left = '', right = ''},
+    section_separators = { left = '', right = ''},
+    disabled_filetypes = {
+      statusline = {},
+      winbar = {},
+    },
+    ignore_focus = {},
+    always_divide_middle = true,
+    globalstatus = false,
+    refresh = {
+      statusline = 1000,
+      tabline = 1000,
+      winbar = 1000,
     }
   },
-  {
-    'scalameta/nvim-metals',
-    dependencies = {
-      {'nvim-lua/plenary.nvim'},
-      {'mfussenegger/nvim-dap'}
-    }
-  }
-})
-
-vim.opt.termguicolors = true
-vim.cmd.colorscheme('tokyonight')
+  sections = {
+    lualine_a = {'mode'},
+    lualine_b = {'branch', 'diff', 'diagnostics'},
+    lualine_c = {'filename'},
+    lualine_x = {'encoding', 'fileformat', 'filetype'},
+    lualine_y = {'progress'},
+    lualine_z = {'location'}
+  },
+  inactive_sections = {
+    lualine_a = {},
+    lualine_b = {},
+    lualine_c = {'filename'},
+    lualine_x = {'location'},
+    lualine_y = {},
+    lualine_z = {}
+  },
+  tabline = {},
+  winbar = {},
+  inactive_winbar = {},
+  extensions = {}
+}
 
 local lsp = require('lsp-zero').preset({})
 

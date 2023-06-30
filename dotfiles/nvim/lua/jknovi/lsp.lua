@@ -195,10 +195,10 @@ local setup = function()
   })
 
   -- These server just use the vanilla setup
-  --local servers = { "bashls", "dockerls", "html", "tsserver", "gopls", "clangd" }
-  --for _, server in pairs(servers) do
-  --  lsp_config[server].setup({ on_attach = on_attach })
-  --end
+  local servers = { "bashls", "dockerls", "html", "tsserver", "gopls", "clangd" }
+  for _, server in pairs(servers) do
+    lsp_config[server].setup({ on_attach = on_attach })
+  end
 
   -- Uncomment for trace logs from neovim
   -- vim.lsp.set_log_level('trace')

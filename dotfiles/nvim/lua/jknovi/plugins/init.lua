@@ -23,15 +23,36 @@ end
 opt.rtp:prepend(lazypath)
 
 return require('lazy').setup({
-    {'folke/neodev.nvim'},
+    {
+        'nvim-tree/nvim-tree.lua',
+        dependencies = { 'nvim-tree/nvim-web-devicons', opt = true },
+        config = function()
+            require("jknovi.plugins.nvim-tree").setup()
+        end
+    },
+    {
+        'folke/neodev.nvim',
+        lazy = true,
+    },
+    {
+        'nvim-web-devicons',
+        lazy = true,
+    },
     {
         'nvim-lualine/lualine.nvim',
         dependencies = { 'nvim-tree/nvim-web-devicons', opt = true },
+        config = function()
+            require("jknovi.plugins.lualine").setup()
+        end
     },
-    {'folke/tokyonight.nvim'},
+    {
+        'folke/tokyonight.nvim',
+        lazy = true,
+    },
     {'gruvbox-community/gruvbox'},
     {
         'nvim-telescope/telescope.nvim',
+        lazy = true,
         dependencies = {
             'nvim-lua/plenary.nvim',
             'nvim-lua/popup.nvim',
@@ -60,15 +81,14 @@ return require('lazy').setup({
     },
     {
         'VonHeikemen/lsp-zero.nvim',
+        lazy = true,
         branch = 'v2.x',
         dependencies = {
             -- LSP Support
             {'neovim/nvim-lspconfig'},             -- Required
             {                                      -- Optional
                 'williamboman/mason.nvim',
-                build = function()
-                    pcall(cmd, 'MasonUpdate')
-                end,
+                build = ":MasonUpdate"
             },
             {'williamboman/mason-lspconfig.nvim'}, -- Optional
 
@@ -81,6 +101,9 @@ return require('lazy').setup({
     {
         'nvim-treesitter/nvim-treesitter',
         build = ':TSUpdate',
+        config = function()
+            require("jknovi.plugins.treesitter").setup()
+        end,
     },
     {
         'scalameta/nvim-metals',

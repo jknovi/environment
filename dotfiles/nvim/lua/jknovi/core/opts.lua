@@ -31,3 +31,9 @@ opt.showmatch = true
 opt.termguicolors = true
 opt.background = "dark"
 opt.scrolloff = 8
+
+-- Spell
+vim.opt.spelllang = 'en_us'
+vim.opt.spell = true
+
+vim.signcolumn = yes

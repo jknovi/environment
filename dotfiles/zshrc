@@ -1,7 +1,7 @@
 setopt histignorealldups sharehistory
 
 # Use modern completion system
-zstyle :compinstall filename '/home/jcanovi/.zshrc'
+zstyle :compinstall filename "$HOME/.zshrc"
 
 autoload -Uz compinit
 compinit
@@ -68,16 +68,23 @@ ssh() {
     set-title $HOST;
 }
 
+prit() {
+    local_branch="$(git rev-parse --abbrev-ref HEAD)"
+
+    git push origin -f "$local_branch:$USER/$local_branch"
+}
+
 alias e=vim
 
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
 export PATH=$PATH:$HOME/.cargo/bin
 export PATH=$PATH:$HOME/scripts
-export PATH=$PATH:$HOME/node/bin
 export PATH=$PATH:$HOME/.vim/plugged/fzf/bin
+export PATH="$PATH:$HOME/.env/local/nvim-linux-x86_64/bin"
+export PATH="$PATH:$HOME/.env/local/clangd_12.0.1/bin"
 
-alias vi='vim'
+alias vi='nvim'
 alias gpr="git pull --rebase"
 alias gvv="git branch -vv"
 alias gst="git status"
@@ -88,19 +95,18 @@ alias gdf="git diff"
 alias fo='vim $(fzf)'
 alias tmux="tmux -2"
 
+alias bb="bazel build --ui_event_filters=-info --disk_cache=/home/$USER/bazel-cache"
+alias br="bazel run --ui_event_filters=-info --disk_cache=/home/$USER/bazel-cache"
+alias bt="bazel test --ui_event_filters=-info --disk_cache=/home/$USER/bazel-cache"
+alias bbo="bazel build -c opt --ui_event_filters=-info --disk_cache=/home/$USER/bazel-cache"
+alias bro="bazel run -c opt --ui_event_filters=-info --disk_cache=/home/$USER/bazel-cache"
+alias bto="bazel test -c opt --ui_event_filters=-info --disk_cache=/home/$USER/bazel-cache"
+alias gd="cd $HOME/graphane/"
+alias gw="cd $HOME/graphane-wip/"
+alias gfix="bb --config=fix-format //... && br //:buildifier -- --mode=fix --lint=fix -r . && bb --config=precommit --keep_going //..."
+
 #fpath=(~/.zsh/completion $fpath)
 #autoload -Uz compinit && compinit -i
-
-## Remap ctrl to capslock
-if [[ -n "$WAYLAND_DISPLAY" ]]; then
-    gsettings set org.gnome.desktop.input-sources xkb-options "['caps:ctrl_modifier']"
-else
-    /usr/bin/setxkbmap -option "ctrl:nocaps"
-fi
-
-# Make tap ctrl = esc
-xcape -e 'Control_L=Escape'
-
 
 bindkey -v
 
@@ -111,23 +117,6 @@ then
 fi
 export PATH
 
-export NVM_DIR="$HOME/.nvm"
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-
-. $HOME/.asdf/asdf.sh
-
-export KOTLIN_PATH=/var/lib/snapd/snap/kotlin/current
-export JAVA_HOME=/usr/lib/jvm/java-20-openjdk-20.0.1.0.9-8.rolling.fc38.x86_64
-export SPARK_HOME=/home/jcanovi/.spark/spark-3.4.0-bin-hadoop3
-
-# The next line updates PATH for the Google Cloud SDK.
-if [ -f '/home/jcanovi/packages/google-cloud-sdk/path.zsh.inc' ]; then . '/home/jcanovi/packages/google-cloud-sdk/path.zsh.inc'; fi
-
-# The next line enables shell command completion for gcloud.
-if [ -f '/home/jcanovi/packages/google-cloud-sdk/completion.zsh.inc' ]; then . '/home/jcanovi/packages/google-cloud-sdk/completion.zsh.inc'; fi
-
-
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/bin/terraform terraform
 
@@ -135,3 +124,5 @@ complete -o nospace -C /usr/bin/terraform terraform
 
 ## this should be the last line!!
 eval "$(starship init zsh)"
+export VOLTA_HOME="$HOME/.volta"
+export PATH="$VOLTA_HOME/bin:$PATH"

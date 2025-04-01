@@ -36,146 +36,12 @@ local setup = function()
     api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
   end
 
-  --================================
-  -- Metals specific setup
-  --================================
-  local metals_config = require("metals").bare_config()
-  metals_config.tvp = {
-    icons = {
-      enabled = true,
-    },
-  }
-
-  --metals_config.cmd = { "cs", "launch", "tech.neader:langoustine-tracer_3:0.0.18", "--", "metals" }
-  metals_config.settings = {
-    useGlobalExecutable = true,
-    --disabledMode = true,
-    --bloopVersion = "1.5.3-15-49c6986e-20220816-2002",
-    showImplicitArguments = true,
-    showImplicitConversionsAndClasses = true,
-    showInferredType = true,
-    --enableSemanticHighlighting = true,
-    --fallbackScalaVersion = "2.13.10",
-    --serverVersion = "0.11.2+74-7a6a65a7-SNAPSHOT",
-    --serverVersion = "0.11.13-SNAPSHOT",
-    --testUserInterface = "Test Explorer",
-  }
-
-  metals_config.init_options.statusBarProvider = "on"
-  metals_config.capabilities = capabilities
-
-  metals_config.on_attach = function(client, bufnr)
-    on_attach(client, bufnr)
-
-    map("v", "K", require("metals").type_of_range)
-
-    map("n", "<leader>ws", function()
-      require("metals").hover_worksheet({ border = "single" })
-    end)
-
-    map("n", "<leader>tt", require("metals.tvp").toggle_tree_view)
-
-    map("n", "<leader>tr", require("metals.tvp").reveal_in_tree)
-
-    map("n", "<leader>mmc", require("metals").commands)
-
-    map("n", "<leader>mts", function()
-      require("metals").toggle_setting("showImplicitArguments")
-    end)
-
-    -- A lot of the servers I use won't support document_highlight or codelens,
-    -- so we juse use them in Metals
-    api.nvim_create_autocmd("CursorHold", {
-      callback = vim.lsp.buf.document_highlight,
-      buffer = bufnr,
-      group = lsp_group,
-    })
-    api.nvim_create_autocmd("CursorMoved", {
-      callback = vim.lsp.buf.clear_references,
-      buffer = bufnr,
-      group = lsp_group,
-    })
-    api.nvim_create_autocmd({ "BufEnter", "BufWritePost" }, {
-      callback = vim.lsp.codelens.refresh,
-      buffer = bufnr,
-      group = lsp_group,
-    })
-    api.nvim_create_autocmd("FileType", {
-      pattern = { "dap-repl" },
-      callback = function()
-        require("dap.ext.autocompl").attach()
-      end,
-      group = lsp_group,
-    })
-
-    -- nvim-dap
-    -- I only use nvim-dap with Scala, so we keep it all in here
-    local dap = require("dap")
-
-    dap.configurations.scala = {
-      {
-        type = "scala",
-        request = "launch",
-        name = "Run or test with input",
-        metals = {
-          runType = "runOrTestFile",
-          args = function()
-            local args_string = vim.fn.input("Arguments: ")
-            return vim.split(args_string, " +")
-          end,
-        },
-      },
-      {
-        type = "scala",
-        request = "launch",
-        name = "Run or Test",
-        metals = {
-          runType = "runOrTestFile",
-        },
-      },
-      {
-        type = "scala",
-        request = "launch",
-        name = "Test Target",
-        metals = {
-          runType = "testTarget",
-        },
-      },
-      {
-        type = "scala",
-        request = "launch",
-        name = "Run minimal2 main",
-        metals = {
-          mainClass = "minimal2.Main",
-          buildTarget = "minimal",
-        },
-      },
-    }
-
-    map("n", "<leader>dc", require("dap").continue)
-    map("n", "<leader>dr", require("dap").repl.toggle)
-    map("n", "<leader>dK", require("dap.ui.widgets").hover)
-    map("n", "<leader>dt", require("dap").toggle_breakpoint)
-    map("n", "<leader>dso", require("dap").step_over)
-    map("n", "<leader>dsi", require("dap").step_into)
-    map("n", "<leader>drl", require("dap").run_last)
-
-    dap.listeners.after["event_terminated"]["nvim-metals"] = function()
-      vim.notify("dap finished!")
-      --dap.repl.open()
-    end
-
-    require("metals").setup_dap()
+  -- These server just use the vanilla setup
+  local servers = { "bashls", "dockerls", "html", "gopls", "protols" }
+  for _, server in pairs(servers) do
+    lsp_config[server].setup({ on_attach = on_attach })
   end
 
-  local nvim_metals_group = api.nvim_create_augroup("nvim-metals", { clear = true })
-  api.nvim_create_autocmd("FileType", {
-    pattern = { "scala", "sbt", "java" },
-    callback = function()
-      require("metals").initialize_or_attach(metals_config)
-    end,
-    group = nvim_metals_group,
-  })
 
   lsp_config.lua_ls.setup({
     on_attach = on_attach,
@@ -194,11 +60,38 @@ local setup = function()
     },
   })
 
-  -- These server just use the vanilla setup
-  local servers = { "bashls", "dockerls", "html", "tsserver", "gopls", "clangd" }
-  for _, server in pairs(servers) do
-    lsp_config[server].setup({ on_attach = on_attach })
-  end
+  lsp_config.clangd.setup{
+    on_new_config = function(new_config, new_root_dir)
+        if new_root_dir:find("liquid[-]core") then
+            new_config.cmd = {
+                new_root_dir.."/external/toolchains/clang/bin/clangd",
+                "--background-index",
+                "--clang-tidy",
+                "--cross-file-rename",
+                "--header-insertion=iwyu",
+            }
+        elseif new_root_dir:find("graphane") then
+            new_config.cmd = {
+                new_root_dir.."/external/toolchains_llvm++llvm+llvm_toolchain_llvm/bin/clangd",
+                "--background-index",
+                "--clang-tidy",
+                "--cross-file-rename",
+                "--header-insertion=iwyu",
+            }
+        else
+            new_config.cmd = {
+                "/usr/bin/clangd",
+                "--background-index",
+                "--clang-tidy",
+                "--cross-file-rename",
+                "--header-insertion=iwyu",
+            }
+        end
+    end,
+    on_attach = on_attach,
+    root_dir = require('lspconfig.util').root_pattern('compile_commands.json', '.git'),
+    on_attach = on_attach 
+  }
 
   -- Uncomment for trace logs from neovim
   -- vim.lsp.set_log_level('trace')
